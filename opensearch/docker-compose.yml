@@ -1,0 +1,36 @@
+services:
+  # backend for traces and logs
+  opensearch:
+    image: opensearchproject/opensearch:latest
+    container_name: opensearch
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=aRT/[sqA7^
+    ports:
+      - "9200:9200"
+      - "9600:9600"
+    volumes:
+      - opensearch-data:/usr/share/opensearch/data
+    networks:
+      - otel-demo
+
+  # frontend visualization(optional)
+  opensearch-dashboard:
+    image: opensearchproject/opensearch-dashboards:latest
+    container_name: opensearch-dashboard
+    restart: unless-stopped
+    environment:
+      - OPENSEARCH_HOSTS=https://opensearch:9200
+    ports:
+      - "5601:5601"
+    networks:
+      - otel-demo
+
+volumes:
+  opensearch-data:
+    driver: local
+
+networks:
+  otel-demo:
+    driver: bridge
